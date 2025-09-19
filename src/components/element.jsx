@@ -21,7 +21,6 @@ export default function Element({
       setShowIsCompleted(!showIsCompleted);
 
       const res = await req.json();
-      console.log(res);
       setShowCompletedDate(res.todo.completedDate);
     } catch (error) {
       setError(error.message);

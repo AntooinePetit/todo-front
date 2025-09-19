@@ -37,7 +37,7 @@ export default function ToDoPage() {
         method: "DELETE",
       });
       if (!req.ok) throw new Error("Impossible de supprimer la tâche");
-      fetchTodos();
+      setTodos((prev) => prev.filter((todo) => todo._id !== id));
 
       // Chercher dans le state todos l'élément qui a été supprimé du state
       // Ca aura pour conséquence de déclencher un rendu du composant sans avoir à faire un autre appel au back
@@ -48,17 +48,19 @@ export default function ToDoPage() {
 
   const addTodo = async (title) => {
     try {
-      setLoading(true);
-      await fetch("http://localhost:3000/api/v1/todos", {
+      const req = await fetch("http://localhost:3000/api/v1/todos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title }),
       });
-      fetchTodos();
+      if (!req.ok) throw new Error("Impossible d'ajouter la tâche");
+
+      const res = await req.json();
+
+      // On ajoute directement au state (plus besoin de refetch)
+      setTodos((prev) => [...prev, res.todo]);
     } catch (error) {
       setError(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
